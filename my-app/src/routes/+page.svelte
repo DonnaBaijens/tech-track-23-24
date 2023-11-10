@@ -2,7 +2,7 @@
 <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
 
 <script>
-	import TestBarChart from '../components/test.svelte';
+	import TestBarChart from '../components/Test.svelte';
 </script>
 
 <TestBarChart />
