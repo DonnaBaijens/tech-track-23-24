@@ -136,7 +136,6 @@ text {
             const data = await response.json();
             happinessData.push(...data); // Append data to the existing array
             console.log(happinessData);
-            testFunction(happinessData);
         } else {
             console.error('Failed to fetch the data');
         }
@@ -161,10 +160,6 @@ text {
         generateChart();
     });
 
-    const testFunction = (happinessData) => {
-        const freedom = happinessData.map((datapoint) => datapoint.Freedom);
-        console.log(freedom);
-    };
 
     const generateChart = () => {
         const chartWidth = 1500;
@@ -237,8 +232,27 @@ text {
     
 
     };
+
+        // Function to handle button click
+    const handleClick = (event) => {
+        const selectedYear = event.target.value;
+        console.log('Selected year:', selectedYear);
+        // Perform actions based on the selected year value
+    };
+ 
+
+    
 </script>
 
+<h2>Family</h2>
+
+<div>
+    <button on:click={handleClick} value="2015">2015</button>
+    <button on:click={handleClick} value="2016">2016</button>
+    <button on:click={handleClick} value="2017">2017</button>
+    <button on:click={handleClick} value="2018">2018</button>
+    <button on:click={handleClick} value="2019">2019</button>
+    </div>
 
 <div id="chartContainer"></div>
 
