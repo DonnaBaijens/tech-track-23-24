@@ -116,9 +116,6 @@ text {
 
 </style> -->
 
-
-
-
 <script>
 	import { redirect } from "@sveltejs/kit";
     import * as d3 from "d3";
@@ -161,18 +158,21 @@ text {
     });
 
 
-    const generateChart = () => {
+    const generateChart = (selectedYear) => {
+
+        const selectedData = getSelectedYearData(selectedYear);
+
         const chartWidth = 1500;
         const chartHeight = 3000;
 
         const xScale = d3
             .scaleLinear()
-            .domain([0, d3.max(happiness2015Data, d => d.Family)])
+            .domain([0, d3.max(selectedData, d => d.Family)])
             .range([0, chartWidth - 155]);
 
         const yScale = d3
             .scaleBand()
-            .domain(happiness2015Data.map(d => d.Country))
+            .domain(selectedData.map(d => d.Country))
             .range([0, chartHeight])
             .paddingInner(0.1);
 
@@ -191,11 +191,11 @@ text {
 
         const colorScaleQuant = d3    
         .scaleQuantize()
-        .domain([0, d3.max(happiness2015Data, d => d.Family)])
+        .domain([0, d3.max(selectedData, d => d.Family)])
         .range(['purple', 'blue', 'green', 'yellow', 'orange', 'red']);
 
         const bars = svg.selectAll(".bar")
-            .data(happiness2015Data)
+            .data(selectedData)
             .join("g")
             .attr("class", "bar")
             .attr("transform", "translate(145, 0)");
@@ -238,24 +238,59 @@ text {
         const selectedYear = event.target.value;
         console.log('Selected year:', selectedYear);
         // Perform actions based on the selected year value
+        generateChart(selectedYear);
     };
  
 
-    
+    const getSelectedYearData = (selectedYear) => {         
+        let selectedData = [];     
+        
+        
+        switch (selectedYear) {         
+            case '2015':             
+                selectedData = happiness2015Data;             
+                break;         
+            
+            case '2016':             
+                selectedData = happiness2016Data;             
+                break;         
+                
+            case '2017':             
+                selectedData = happiness2017Data;             
+                break;         
+                
+            case '2018':             
+                selectedData = happiness2018Data;             
+                break;         
+                
+            case '2019':             
+                selectedData = happiness2019Data;             
+                break;         
+                
+            default:             // Handle default case or provide an error message            
+            
+                break;     
+            
+            }     
+            
+            return selectedData; 
+        
+        };
+
+
 </script>
 
 <h2>Family</h2>
 
 <div>
-    <button on:click={handleClick} value="2015">2015</button>
-    <button on:click={handleClick} value="2016">2016</button>
-    <button on:click={handleClick} value="2017">2017</button>
-    <button on:click={handleClick} value="2018">2018</button>
-    <button on:click={handleClick} value="2019">2019</button>
-    </div>
+	<button on:click={handleClick} value="2015">2015</button>
+	<button on:click={handleClick} value="2016">2016</button>
+	<button on:click={handleClick} value="2017">2017</button>
+	<button on:click={handleClick} value="2018">2018</button>
+	<button on:click={handleClick} value="2019">2019</button>
+</div>
 
-<div id="chartContainer"></div>
-
+<div id="chartContainer" />
 
 <!-- filteren per totaal van happiness score en dan family, trust, government, etc. 
 ook filteren per jaar, want heb nu alleen 2015 nog -->
