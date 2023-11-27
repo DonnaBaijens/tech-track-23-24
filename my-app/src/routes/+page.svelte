@@ -3,10 +3,12 @@
 <script>
 	// import TestBarChart from '../components/Test.svelte';
     import Barchart from '../components/Barchart.svelte';
+    import Smiley from '../components/Smiley.svelte';
 </script>
 
 <!-- <TestBarChart /> -->
 <Barchart/>
+<Smiley/>
 	
 <svelte:head>
 	<title>Tech Track Boilerplate</title>
