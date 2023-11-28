@@ -139,7 +139,7 @@ text {
 	}
 
 	onMount(() => {
-        fetchDataAndUpdateChart();
+		fetchDataAndUpdateChart();
 		// const url2015 = '/data/2015.json';
 		// const url2016 = '/data/2016.json';
 		// const url2017 = '/data/2017.json';
@@ -193,13 +193,39 @@ text {
 			fetchJSONData(url2019, happiness2019Data)
 		]);
 
+		let updatedData2017 = replaceKey(happiness2017Data, 'Happiness.Score', 'Happiness Score');
+		updatedData2017 = replaceKey(
+			happiness2017Data,
+			'Health..Life.Expectancy.',
+			'Health (Life Expectancy)'
+		);
+		happiness2017Data = updatedData2017;
+
 		let updatedData2018 = replaceKey(happiness2018Data, 'Social support', 'Family');
 		updatedData2018 = replaceKey(updatedData2018, 'Country or region', 'Country');
+		updatedData2018 = replaceKey(updatedData2018, 'Score', 'Happiness Score');
+		updatedData2018 = replaceKey(
+			updatedData2018,
+			'Healthy life expectancy',
+			'Health (Life Expectancy)'
+		);
+		updatedData2018 = replaceKey(updatedData2018, 'Freedom to make life choices', 'Freedom');
 		happiness2018Data = updatedData2018;
 
 		let updatedData2019 = replaceKey(happiness2019Data, 'Social support', 'Family');
 		updatedData2019 = replaceKey(updatedData2019, 'Country or region', 'Country');
+		updatedData2019 = replaceKey(updatedData2019, 'Score', 'Happiness Score');
+		updatedData2019 = replaceKey(
+			updatedData2019,
+			'Healthy life expectancy',
+			'Health (Life Expectancy)'
+		);
+		updatedData2019 = replaceKey(updatedData2019, 'Freedom to make life choices', 'Freedom');
 		happiness2019Data = updatedData2019;
+
+		console.log('deze1', updatedData2017);
+		console.log('deze2', updatedData2018);
+		console.log('deze3', updatedData2019);
 
 		// After updating the data, regenerate the chart
 		generateChart(happiness2015Data);
@@ -255,27 +281,42 @@ text {
 			.domain([0, d3.max(selectedData, (d) => d.Family)])
 			.range(['purple', 'blue', 'green', 'yellow', 'orange', 'red']);
 
+		const smileyWidth = 17;
+		const smileyHeight = 17;
+
+		const defs = svg.append('defs');
+
+		defs
+			.append('pattern')
+			.attr('id', 'smileyPattern')
+			.attr('width', smileyWidth)
+			.attr('height', smileyHeight)
+			.attr('patternUnits', 'userSpaceOnUse')
+			.append('image')
+			.attr('xlink:href', '/images/Smiley.svg')
+			.attr('width', smileyWidth)
+			.attr('height', smileyHeight);
+
 		const bars = svg
 			.selectAll('.bar')
 			.data(selectedData)
 			.join('g')
 			.attr('class', 'bar')
-			.attr('transform', 'translate(145, 0)');
+			.attr('transform', (d) => `translate(145, ${yScale(d.Country)})`);
 
 		bars
 			.append('rect')
 			.attr('height', yScale.bandwidth())
-			.attr('y', (d) => yScale(d.Country))
-			.attr('width', 0)
-			.transition()
-			.duration(2800)
-			.attr('width', (d) => xScale(d.Family))
-			.attr('fill', (d) => colorScaleQuant(d.Family))
+			.attr('width', (d) => {
+				const numberOfSmileys = Math.floor(xScale(d.Family) / smileyWidth);
+				return numberOfSmileys * smileyWidth;
+			})
+			.attr('fill', 'url(#smileyPattern)')
 			.attr('stroke', 'black');
 
 		bars
 			.append('text')
-			.attr('y', (d) => yScale(d.Country) + yScale.bandwidth() / 1.2)
+			.attr('y', yScale.bandwidth() / 1.2)
 			.attr('x', 0)
 			.transition()
 			.duration(3000)
@@ -293,6 +334,50 @@ text {
 			// .text(d => d.Family)
 			.attr('fill', 'black');
 	};
+
+	// const bars = svg
+	// 	.selectAll('.bar')
+	// 	.data(selectedData)
+	// 	.join('g')
+	// 	.attr('class', 'bar')
+	// 	.attr('transform', 'translate(145, 0)');
+
+	// const smileyGroups = bars
+	// 	.append('g')
+	// 	.attr('class', 'smiley-group')
+	// 	.attr('transform', 'translate(0, 0)');
+
+	// const numberOfSmileys = 10;
+
+	// smileyGroups.each(function (d) {
+	// 	const smileyGroup = d3.select(this);
+
+	// 	for (let i = 0; i < numberOfSmileys; i++) {
+	// 		smileyGroup
+	// 			.append('svg:image')
+	// 			.attr('xlink:href', '/images/Smiley.svg')
+	// 			.attr('height', yScale.bandwidth() / numberOfSmileys)
+	// 			.attr('y', yScale(d.Country) + i * (yScale.bandwidth() / numberOfSmileys))
+	// 			.attr('width', 0)
+	// 			.transition()
+	// 			.duration(2800)
+	// 			.attr('width', xScale(d.Family) / numberOfSmileys)
+	// 			.attr('fill', colorScaleQuant(d.Family))
+	// 			.attr('stroke', 'black');
+	// 	}
+	// });
+
+	// bars
+	// 	.append('svg:image')
+	// 	.attr('xlink:href', '/images/Smiley.svg')
+	// 	.attr('height', yScale.bandwidth())
+	// 	.attr('y', (d) => yScale(d.Country))
+	// 	.attr('width', 0)
+	// 	.transition()
+	// 	.duration(2800)
+	// 	.attr('width', (d) => xScale(d.Family))
+	// 	.attr('fill', (d) => colorScaleQuant(d.Family))
+	// 	.attr('stroke', 'black');
 
 	const handleClick = (event) => {
 		const selectedYear = event.target.value;
@@ -325,9 +410,24 @@ text {
 
 		generateChart(selectedData);
 	};
+
+	let selectedOption = 'Family';
+
+	function handleSelection(event) {
+		selectedOption = event.target.value;
+		// Add logic to handle the selected option, such as updating the chart
+	}
 </script>
 
-<h2>Family</h2>
+
+<div class="dropdown">
+	<select bind:value={selectedOption} on:change={handleSelection}>
+		<option value="Family">Family</option>
+		<option value="Happiness Score">Happiness Score</option>
+		<option value="Freedom">Freedom</option>
+		<option value="Health (Life Expectancy)">Health (Life Expectancy)</option>
+	</select>
+</div>
 
 <div>
 	<button on:click={handleClick} value="2015">2015</button>
@@ -341,3 +441,24 @@ text {
 
 <!-- filteren per totaal van happiness score en dan family, trust, government, etc. 
 ook filteren per jaar, want heb nu alleen 2015 nog -->
+
+<style>
+	.dropdown {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 20px;
+	}
+
+	/* Style the dropdown select */
+	select {
+		padding: 12px;
+        text-align: center;
+		font-size: 40px;
+		font-family: 'Pacifico'; /* Use the Pacifico font */
+        border: none;	
+        background: none;
+        cursor: pointer;
+        background-position: 8px center;
+	}
+</style>
