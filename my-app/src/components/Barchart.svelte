@@ -140,42 +140,7 @@ text {
 
 	onMount(() => {
 		fetchDataAndUpdateChart();
-		// const url2015 = '/data/2015.json';
-		// const url2016 = '/data/2016.json';
-		// const url2017 = '/data/2017.json';
-		// const url2018 = '/data/2018.json';
-		// const url2019 = '/data/2019.json';
 
-		// let updatedData2018 = [];
-		// let updatedData2019 = [];
-
-		// await Promise.all([
-		// 	fetchJSONData(url2015, happiness2015Data),
-		// 	fetchJSONData(url2016, happiness2016Data),
-		// 	fetchJSONData(url2017, happiness2017Data),
-		// 	fetchJSONData(url2018, happiness2018Data),
-		// 	fetchJSONData(url2019, happiness2019Data)
-		// ]);
-
-		// .then ( happiness2015Data => {
-		//     updatedData2018 = replaceKey(happiness2018Data, 'Social support', 'Family');
-		//     updatedData2019 = replaceKey(happiness2019Data, 'Social support', 'Family')});
-
-		//     console.log('deze is het' , updatedData2019);
-
-		// Replace "social_support" key with "family"
-		// let updatedData2018 = replaceKey(happiness2018Data, 'Social support', 'Family');
-		// updatedData2018 = replaceKey(happiness2018Data, 'Country or region', 'Country');
-		// happiness2018Data = updatedData2018
-		// let updatedData2019 = replaceKey(happiness2019Data, 'Social support', 'Family');
-		// updatedData2019 = replaceKey(happiness2019Data, 'Country or region', 'Country');
-		// happiness2019Data = updatedData2019
-
-		// // Console log effies om te kijken of het werkt
-		// console.log('kaas', updatedData2019);
-
-		// After fetching the data, you can now generate the chart
-		// generateChart(happiness2015Data);
 	});
 
 	async function fetchDataAndUpdateChart() {
@@ -194,38 +159,28 @@ text {
 		]);
 
 		let updatedData2017 = replaceKey(happiness2017Data, 'Happiness.Score', 'Happiness Score');
-		updatedData2017 = replaceKey(
-			happiness2017Data,
-			'Health..Life.Expectancy.',
-			'Health (Life Expectancy)'
-		);
+		updatedData2017 = replaceKey(happiness2017Data, 'Health..Life.Expectancy.', 'Health (Life Expectancy)');
 		happiness2017Data = updatedData2017;
 
 		let updatedData2018 = replaceKey(happiness2018Data, 'Social support', 'Family');
 		updatedData2018 = replaceKey(updatedData2018, 'Country or region', 'Country');
 		updatedData2018 = replaceKey(updatedData2018, 'Score', 'Happiness Score');
-		updatedData2018 = replaceKey(
-			updatedData2018,
-			'Healthy life expectancy',
-			'Health (Life Expectancy)'
-		);
+		updatedData2018 = replaceKey(updatedData2018, 'Healthy life expectancy', 'Health (Life Expectancy)');
 		updatedData2018 = replaceKey(updatedData2018, 'Freedom to make life choices', 'Freedom');
 		happiness2018Data = updatedData2018;
 
 		let updatedData2019 = replaceKey(happiness2019Data, 'Social support', 'Family');
 		updatedData2019 = replaceKey(updatedData2019, 'Country or region', 'Country');
 		updatedData2019 = replaceKey(updatedData2019, 'Score', 'Happiness Score');
-		updatedData2019 = replaceKey(
-			updatedData2019,
-			'Healthy life expectancy',
-			'Health (Life Expectancy)'
-		);
+		updatedData2019 = replaceKey(updatedData2019,'Healthy life expectancy', 'Health (Life Expectancy)');
 		updatedData2019 = replaceKey(updatedData2019, 'Freedom to make life choices', 'Freedom');
 		happiness2019Data = updatedData2019;
 
 		console.log('deze1', updatedData2017);
 		console.log('deze2', updatedData2018);
 		console.log('deze3', updatedData2019);
+
+        console.log('dit', happiness2017Data)
 
 		// After updating the data, regenerate the chart
 		generateChart(happiness2015Data);
@@ -242,8 +197,8 @@ text {
 		});
 	}
 
-	const generateChart = (selectedData) => {
-		console.log('generate Chart' + selectedData[0].Family);
+	const generateChart = (selectedData, selectedOption) => {
+		console.log('generate Chart' + selectedData[0][selectedOption]);
 
 		d3.select('#chartContainer svg').remove();
 
@@ -252,7 +207,7 @@ text {
 
 		const xScale = d3
 			.scaleLinear()
-			.domain([0, d3.max(selectedData, (d) => d.Family)])
+			.domain([0, d3.max(selectedData, (d) => d[selectedOption])])
 			.range([0, chartWidth - 155]);
 
 		const yScale = d3
@@ -278,7 +233,7 @@ text {
 
 		const colorScaleQuant = d3
 			.scaleQuantize()
-			.domain([0, d3.max(selectedData, (d) => d.Family)])
+			.domain([0, d3.max(selectedData, (d) => d[selectedOption])])
 			.range(['purple', 'blue', 'green', 'yellow', 'orange', 'red']);
 
 		const smileyWidth = 17;
@@ -308,7 +263,7 @@ text {
 			.append('rect')
 			.attr('height', yScale.bandwidth())
 			.attr('width', (d) => {
-				const numberOfSmileys = Math.floor(xScale(d.Family) / smileyWidth);
+				const numberOfSmileys = Math.floor(xScale(d[selectedOption]) / smileyWidth);
 				return numberOfSmileys * smileyWidth;
 			})
 			.attr('fill', 'url(#smileyPattern)')
@@ -321,66 +276,31 @@ text {
 			.transition()
 			.duration(3000)
 			.tween('text', function (d) {
-				const interpolator = d3.interpolate(0, d.Family);
+				const interpolator = d3.interpolate(0, d[selectedOption]);
 				return function (t) {
-					if (d.Family != 0) {
+					if (d[selectedOption] != 0) {
 						d3.select(this).text(interpolator(t).toFixed(4)); // Adjust the precision as needed
 					} else {
 						d3.select(this).text(interpolator(t).toFixed(0));
 					}
 				};
 			})
-			.attr('x', (d) => (d.Family === 0 ? 20 : xScale(d.Family) - 80))
+			.attr('x', (d) => (d[selectedOption] === 0 ? 20 : xScale(d[selectedOption]) - 80))
 			// .text(d => d.Family)
 			.attr('fill', 'black');
 	};
 
-	// const bars = svg
-	// 	.selectAll('.bar')
-	// 	.data(selectedData)
-	// 	.join('g')
-	// 	.attr('class', 'bar')
-	// 	.attr('transform', 'translate(145, 0)');
 
-	// const smileyGroups = bars
-	// 	.append('g')
-	// 	.attr('class', 'smiley-group')
-	// 	.attr('transform', 'translate(0, 0)');
+	let selectedOption = 'Happiness Score';
+	let selectedYear = '2015';
 
-	// const numberOfSmileys = 10;
-
-	// smileyGroups.each(function (d) {
-	// 	const smileyGroup = d3.select(this);
-
-	// 	for (let i = 0; i < numberOfSmileys; i++) {
-	// 		smileyGroup
-	// 			.append('svg:image')
-	// 			.attr('xlink:href', '/images/Smiley.svg')
-	// 			.attr('height', yScale.bandwidth() / numberOfSmileys)
-	// 			.attr('y', yScale(d.Country) + i * (yScale.bandwidth() / numberOfSmileys))
-	// 			.attr('width', 0)
-	// 			.transition()
-	// 			.duration(2800)
-	// 			.attr('width', xScale(d.Family) / numberOfSmileys)
-	// 			.attr('fill', colorScaleQuant(d.Family))
-	// 			.attr('stroke', 'black');
-	// 	}
-	// });
-
-	// bars
-	// 	.append('svg:image')
-	// 	.attr('xlink:href', '/images/Smiley.svg')
-	// 	.attr('height', yScale.bandwidth())
-	// 	.attr('y', (d) => yScale(d.Country))
-	// 	.attr('width', 0)
-	// 	.transition()
-	// 	.duration(2800)
-	// 	.attr('width', (d) => xScale(d.Family))
-	// 	.attr('fill', (d) => colorScaleQuant(d.Family))
-	// 	.attr('stroke', 'black');
+	onMount(() => {
+		// Initial chart generation on page load
+		generateChart(happiness2015Data, selectedOption);
+	});
 
 	const handleClick = (event) => {
-		const selectedYear = event.target.value;
+		selectedYear = event.target.value;
 		console.log('Selected year:', selectedYear);
 
 		// Dynamically choose the selected dataset based on the year
@@ -408,22 +328,40 @@ text {
 				break;
 		}
 
-		generateChart(selectedData);
-	};
+        console.log('selected data:', selectedData)
+        console.log('selected option:', selectedOption)
 
-	let selectedOption = 'Family';
+		generateChart(selectedData, selectedOption);
+	};
 
 	function handleSelection(event) {
 		selectedOption = event.target.value;
 		// Add logic to handle the selected option, such as updating the chart
+		generateChart(getSelectedData(), selectedOption);
+	}
+
+	function getSelectedData() {
+		switch (selectedYear) {
+			case '2015':
+				return happiness2015Data;
+			case '2016':
+				return happiness2016Data;
+			case '2017':
+				return happiness2017Data;
+			case '2018':
+				return happiness2018Data;
+			case '2019':
+				return happiness2019Data;
+			default:
+				return [];
+		}
 	}
 </script>
 
-
 <div class="dropdown">
 	<select bind:value={selectedOption} on:change={handleSelection}>
-		<option value="Family">Family</option>
 		<option value="Happiness Score">Happiness Score</option>
+		<option value="Family">Family</option>
 		<option value="Freedom">Freedom</option>
 		<option value="Health (Life Expectancy)">Health (Life Expectancy)</option>
 	</select>

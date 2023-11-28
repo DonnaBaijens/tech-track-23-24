@@ -110,6 +110,9 @@
         generateChart(selectedData);
     };
 
+
+    
+
 </script>    
 
 <div id = "smileyContainer">
