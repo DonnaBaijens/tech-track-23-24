@@ -127,6 +127,9 @@ text {
 	let happiness2018Data = [];
 	let happiness2019Data = [];
 
+    let selectedOption = 'Happiness Score';
+	let selectedYear = '2015';
+
 	async function fetchJSONData(url, happinessData) {
 		const response = await fetch(url);
 		if (response.ok) {
@@ -140,7 +143,6 @@ text {
 
 	onMount(() => {
 		fetchDataAndUpdateChart();
-
 	});
 
 	async function fetchDataAndUpdateChart() {
@@ -158,8 +160,10 @@ text {
 			fetchJSONData(url2019, happiness2019Data)
 		]);
 
+console.log('hoi', happiness2017Data);
+
 		let updatedData2017 = replaceKey(happiness2017Data, 'Happiness.Score', 'Happiness Score');
-		updatedData2017 = replaceKey(happiness2017Data, 'Health..Life.Expectancy.', 'Health (Life Expectancy)');
+		updatedData2017 = replaceKey(updatedData2017, 'Health..Life.Expectancy.', 'Health (Life Expectancy)');
 		happiness2017Data = updatedData2017;
 
 		let updatedData2018 = replaceKey(happiness2018Data, 'Social support', 'Family');
@@ -180,10 +184,10 @@ text {
 		console.log('deze2', updatedData2018);
 		console.log('deze3', updatedData2019);
 
-        console.log('dit', happiness2017Data)
+        console.log('dit', updatedData2017)
 
 		// After updating the data, regenerate the chart
-		generateChart(happiness2015Data);
+		generateChart(happiness2015Data, selectedOption);
 	}
 
 	function replaceKey(dataArray, oldKey, newKey) {
@@ -291,13 +295,6 @@ text {
 	};
 
 
-	let selectedOption = 'Happiness Score';
-	let selectedYear = '2015';
-
-	onMount(() => {
-		// Initial chart generation on page load
-		generateChart(happiness2015Data, selectedOption);
-	});
 
 	const handleClick = (event) => {
 		selectedYear = event.target.value;
@@ -385,7 +382,7 @@ ook filteren per jaar, want heb nu alleen 2015 nog -->
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		padding: 20px;
+		padding: 30px;
 	}
 
 	/* Style the dropdown select */
@@ -399,4 +396,5 @@ ook filteren per jaar, want heb nu alleen 2015 nog -->
         cursor: pointer;
         background-position: 8px center;
 	}
+
 </style>
