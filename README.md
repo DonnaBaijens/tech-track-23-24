@@ -1,4 +1,4 @@
-![Smiley](my-app/static/images/Smiley.svg)
+<img src='my-app/static/images/Smiley.svg' width=50px height=50px />
 
 <h1>World Happiness</h1> 
 
@@ -44,25 +44,25 @@ I've used this link to convert CSV to Json, so that I can work with Json in Java
 
 <p>Install node.js</p>
 
--- node install
+<b>-- node install</b>
 
 <p>or check if it's installed already by running the following code</p>
 
--- node version
+<b>-- node version</b>
 
 <h3>Clone repository</h3>
 
 <p>Clone repository by this link: https://github.com/DonnaBaijens/tech-track-23-24 with the following command:</p>
 
--- git clone https://github.com/DonnaBaijens/tech-track-23-24.git 
+<b>-- git clone https://github.com/DonnaBaijens/tech-track-23-24.git </b>
 
 <p>After that, run the following code to install all the dependencies</p>
 
--- npm install
+<b>-- npm install</b>
 
 <p>Check if it works by running the application</p>
 
-npm run dev
+<b>npm run dev</b>
 
 <p>Open the link provided in the terminal for your localhost and you should be able to see the application.</p>
 
