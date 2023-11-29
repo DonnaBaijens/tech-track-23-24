@@ -1,4 +1,4 @@
-<img src='my-app/static/images/Smiley.svg' width=50px height=50px />
+<img src='my-app/static/images/Smiley.svg' width=80px height=80px />
 
 <h1>World Happiness</h1> 
 
