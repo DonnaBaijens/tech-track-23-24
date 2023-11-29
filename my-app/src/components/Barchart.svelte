@@ -9,7 +9,7 @@
 	let happiness2018Data = [];
 	let happiness2019Data = [];
 
-    let selectedOption = 'Happiness Score';
+	let selectedOption = 'Happiness Score';
 	let selectedYear = '2015';
 
 	async function fetchJSONData(url, happinessData) {
@@ -26,11 +26,26 @@
 	onMount(() => {
 		fetchDataAndUpdateChart();
 
+		const button2015 = document.querySelector('div button:first-of-type');
+		button2015.addEventListener('click', () => {
+			button2015.classList.remove('selectedbutton');
+		});
 
-        const button2015 = document.querySelector("div button:first-of-type")
-        button2015.addEventListener('click', () => {
-            button2015.classList.remove('selectedbutton');
-        })
+		const alleButtons = document.querySelectorAll('div button');
+
+		alleButtons.forEach((button) => {
+			button.addEventListener('click', () => {
+				const clickedValue = button.value; 
+
+				alleButtons.forEach((otherButton) => {
+					if (otherButton.value === clickedValue) {
+						otherButton.classList.add('selectedbutton');
+					} else {
+						otherButton.classList.remove('selectedbutton');
+					}
+				});
+			});
+		});
 	});
 
 	async function fetchDataAndUpdateChart() {
@@ -48,23 +63,35 @@
 			fetchJSONData(url2019, happiness2019Data)
 		]);
 
-console.log('hoi', happiness2017Data);
+		console.log('hoi', happiness2017Data);
 
 		let updatedData2017 = replaceKey(happiness2017Data, 'Happiness.Score', 'Happiness Score');
-		updatedData2017 = replaceKey(updatedData2017, 'Health..Life.Expectancy.', 'Health (Life Expectancy)');
+		updatedData2017 = replaceKey(
+			updatedData2017,
+			'Health..Life.Expectancy.',
+			'Health (Life Expectancy)'
+		);
 		happiness2017Data = updatedData2017;
 
 		let updatedData2018 = replaceKey(happiness2018Data, 'Social support', 'Family');
 		updatedData2018 = replaceKey(updatedData2018, 'Country or region', 'Country');
 		updatedData2018 = replaceKey(updatedData2018, 'Score', 'Happiness Score');
-		updatedData2018 = replaceKey(updatedData2018, 'Healthy life expectancy', 'Health (Life Expectancy)');
+		updatedData2018 = replaceKey(
+			updatedData2018,
+			'Healthy life expectancy',
+			'Health (Life Expectancy)'
+		);
 		updatedData2018 = replaceKey(updatedData2018, 'Freedom to make life choices', 'Freedom');
 		happiness2018Data = updatedData2018;
 
 		let updatedData2019 = replaceKey(happiness2019Data, 'Social support', 'Family');
 		updatedData2019 = replaceKey(updatedData2019, 'Country or region', 'Country');
 		updatedData2019 = replaceKey(updatedData2019, 'Score', 'Happiness Score');
-		updatedData2019 = replaceKey(updatedData2019,'Healthy life expectancy', 'Health (Life Expectancy)');
+		updatedData2019 = replaceKey(
+			updatedData2019,
+			'Healthy life expectancy',
+			'Health (Life Expectancy)'
+		);
 		updatedData2019 = replaceKey(updatedData2019, 'Freedom to make life choices', 'Freedom');
 		happiness2019Data = updatedData2019;
 
@@ -72,9 +99,9 @@ console.log('hoi', happiness2017Data);
 		console.log('deze2', updatedData2018);
 		console.log('deze3', updatedData2019);
 
-        console.log('dit', updatedData2017)
+		console.log('dit', updatedData2017);
 
-		// After updating the data, regenerate the chart
+		
 		generateChart(happiness2015Data, selectedOption);
 	}
 
@@ -91,7 +118,7 @@ console.log('hoi', happiness2017Data);
 
 	const generateChart = (selectedData, selectedOption) => {
 		console.log('generate Chart' + selectedData[0][selectedOption]);
-        console.log(selectedData.length);
+		console.log(selectedData.length);
 
 		d3.select('#chartContainer svg').remove();
 
@@ -154,12 +181,12 @@ console.log('hoi', happiness2017Data);
 
 		bars
 			.append('rect')
-            .attr('width', 0)
-            .attr('height', yScale.bandwidth())
-            .attr('fill', 'url(#smileyPattern)')
-            .transition()
-            .duration(3000)
-            .ease(d3.easeCubicInOut)
+			.attr('width', 0)
+			.attr('height', yScale.bandwidth())
+			.attr('fill', 'url(#smileyPattern)')
+			.transition()
+			.duration(3000)
+			.ease(d3.easeCubicInOut)
 			.attr('width', (d) => {
 				const numberOfSmileys = Math.floor(xScale(d[selectedOption]) / smileyWidth);
 				return numberOfSmileys * smileyWidth;
@@ -183,17 +210,13 @@ console.log('hoi', happiness2017Data);
 				};
 			})
 			.attr('x', (d) => (d[selectedOption] === 0 ? 20 : xScale(d[selectedOption]) - 80))
-			// .text(d => d.Family)
 			.attr('fill', 'black');
 	};
-
-
 
 	const handleClick = (event) => {
 		selectedYear = event.target.value;
 		console.log('Selected year:', selectedYear);
 
-		// Dynamically choose the selected dataset based on the year
 		let selectedData;
 
 		switch (selectedYear) {
@@ -213,20 +236,18 @@ console.log('hoi', happiness2017Data);
 				selectedData = happiness2019Data;
 				break;
 			default:
-				// Handle default case or provide an error message
 				selectedData = [];
 				break;
 		}
 
-        console.log('selected data:', selectedData)
-        console.log('selected option:', selectedOption)
+		console.log('selected data:', selectedData);
+		console.log('selected option:', selectedOption);
 
 		generateChart(selectedData, selectedOption);
 	};
 
 	function handleSelection(event) {
 		selectedOption = event.target.value;
-		// Add logic to handle the selected option, such as updating the chart
 		generateChart(getSelectedData(), selectedOption);
 	}
 
@@ -246,8 +267,6 @@ console.log('hoi', happiness2017Data);
 				return [];
 		}
 	}
-
-    
 </script>
 
 <div class="dropdown">
@@ -269,39 +288,35 @@ console.log('hoi', happiness2017Data);
 
 <div id="chartContainer" />
 
-
 <style>
-    div {
-        padding: 10px;
-    }
+	div {
+		padding: 10px;
+	}
 
-    div button {
-        padding: 8px;
-        margin: 3px;
-        background-color: rgb(238, 238, 46); 
-        font-size: 15px;
-        font-family: 'Josefin Sans';
-        border: 2px black;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: ease-in-out 400ms;
-        
-    }
+	div button {
+		padding: 8px;
+		margin: 3px;
+		background-color: rgb(238, 238, 46);
+		font-size: 15px;
+		font-family: 'Josefin Sans';
+		border: 2px black;
+		border-radius: 5px;
+		cursor: pointer;
+		transition: ease-in-out 400ms;
+	}
 
-    .selectedbutton {
-        background-color: rgb(240, 179, 65);
-    }
+	.selectedbutton {
+		background-color: rgb(240, 179, 65);
+	}
 
+	div button:hover {
+		background-color: rgb(240, 179, 65);
+		transform: scale(1.5);
+	}
 
-    div button:hover {
-        background-color: rgb(240, 179, 65);
-        transform: scale(1.5);
-    }
-
-    div button:focus {
-        background-color: rgb(240, 179, 65);
-    }
-
+	div button:focus {
+		background-color: rgb(240, 179, 65);
+	}
 
 	.dropdown {
 		display: flex;
@@ -310,22 +325,19 @@ console.log('hoi', happiness2017Data);
 		padding: 40px;
 	}
 
-	/* Style the dropdown select */
 	select {
 		padding: 20px;
-        text-align: center;
+		text-align: center;
 		font-size: 40px;
-		font-family: 'Pacifico'; 
-        border: 5px transparent solid;
-        border-radius: 30px;	
-        background:  rgb(240, 179, 65);
-        cursor: pointer;      
-        transition: ease-in-out 200ms; 
+		font-family: 'Pacifico';
+		border: 5px transparent solid;
+		border-radius: 30px;
+		background: rgb(240, 179, 65);
+		cursor: pointer;
+		transition: ease-in-out 200ms;
 	}
 
-    div select:hover {
-        border: 5px black solid
-    }
-
-
+	div select:hover {
+		border: 5px black solid;
+	}
 </style>
