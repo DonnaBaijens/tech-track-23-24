@@ -269,8 +269,6 @@ console.log('hoi', happiness2017Data);
 
 <div id="chartContainer" />
 
-<!-- filteren per totaal van happiness score en dan family, trust, government, etc. 
-ook filteren per jaar, want heb nu alleen 2015 nog -->
 
 <style>
     div {
