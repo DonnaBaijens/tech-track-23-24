@@ -1,121 +1,3 @@
-<!-- <script>
-    import * as d3 from "d3";
-	import { onMount } from "svelte";
-
-    let happiness2015Data = [];
-    let happiness2016Data = [];
-    let happiness2017Data = [];
-    let happiness2018Data = [];
-    let happiness2019Data = [];
-
-    async function fetchJSONData(url, happinessData) {
-    const response = await fetch(url); // Path to your output.json file
-    if (response.ok) {
-        happinessData = await response.json();
-        console.log(happinessData);
-        testfunctie(happinessData);
-    } else {
-        console.error('Failed to fetch the data');
-    }
-}
-
-
-onMount(async () => {
-    const url2015 = 'src/data/2015.json';
-    const url2016 = 'src/data/2016.json';
-    const url2017 = 'src/data/2017.json';
-    const url2018 = 'src/data/2018.json';
-    const url2019 = 'src/data/2019.json';
-
-    await Promise.all([
-        fetchJSONData(url2015, happiness2015Data),
-        fetchJSONData(url2016, happiness2016Data),
-        fetchJSONData(url2017, happiness2017Data),
-        fetchJSONData(url2018, happiness2018Data),
-        fetchJSONData(url2019, happiness2019Data),
-    ])
-})
-
-const testfunctie = (happinessData) => {
-    const freedom = happinessData.map((datapoint) => datapoint.Freedom);
-    console.log(freedom);
-
-};
-
-
-const happiness2015Data = [];
-
-const chartWidth = 700;
-const chartHeight = 200;
-
-const xScale = d3
-  .scaleLinear()
-  .domain([0, d3.max(happiness2015Data, d => d.Family)])
-  .range([0, chartWidth]);
-
-const yScale = d3
-  .scaleBand()
-  .domain(d3.map(happiness2015Data, d => d.Country))
-  .range([0, chartHeight])
-  .paddingInner(0.05);
-
-//Om text labels toe te voegen hebben we twee
-//elementen nodig: <rect> en <text>. Om dit te
-//organiseren zetten we die samen in een <g>
-//De structuur die we willen is dus:
-// <g>
-//   <rect/>
-//   <text/>
-// </g>
-
-//In plaats van dat we direct een join doen om
-//de balken te maken, doen we een join om lege
-//<g> groepen te maken. Die join actie bewaren
-//als 'bars'
-const bars = d3.select("#bars")
-  .selectAll("g")
-  .data(happiness2015Data)
-  .join("g");
-
-//Nu gaan we die lege groepen vullen met bars
-//met de append() functie voegen we een element
-//toe aan de <g> tag die we eerder hebben gemaakt
-bars.append("rect")
-  .attr("height", yScale.bandwidth())
-  .attr("width", d => xScale(d.Family))
-  .attr("y", d => yScale(d.Country));
-
-//Nu doen we dat nog een keer maar dan voor <text>
-bars.append("text")
-  .attr("y", d => yScale(d.Country) + yScale.bandwidth() / 2)
-  .attr("x", d => xScale(d.Family) - 5)
-  .text(d => d.Family);
-
-d3.select("#labels")
-  .selectAll("text")
-  .data(happiness2015Data)
-  .join("text")
-  .attr("y", d => yScale(d.Country) + yScale.bandwidth() / 2)
-  .text(d => d.Country);
-
-
-
-</script>
-
-<style>
-
-text {
-    font-family: sans-serif;
-    dominant-baseline: middle;
-}
-
-#bars text {
-  fill: white;
-  text-anchor: end;
-}
-
-</style> -->
-
 <script>
 	import { redirect } from '@sveltejs/kit';
 	import * as d3 from 'd3';
@@ -143,6 +25,12 @@ text {
 
 	onMount(() => {
 		fetchDataAndUpdateChart();
+
+
+        const button2015 = document.querySelector("div button:first-of-type")
+        button2015.addEventListener('click', () => {
+            button2015.classList.remove('selectedbutton');
+        })
 	});
 
 	async function fetchDataAndUpdateChart() {
@@ -203,6 +91,7 @@ console.log('hoi', happiness2017Data);
 
 	const generateChart = (selectedData, selectedOption) => {
 		console.log('generate Chart' + selectedData[0][selectedOption]);
+        console.log(selectedData.length);
 
 		d3.select('#chartContainer svg').remove();
 
@@ -265,12 +154,16 @@ console.log('hoi', happiness2017Data);
 
 		bars
 			.append('rect')
-			.attr('height', yScale.bandwidth())
+            .attr('width', 0)
+            .attr('height', yScale.bandwidth())
+            .attr('fill', 'url(#smileyPattern)')
+            .transition()
+            .duration(3000)
+            .ease(d3.easeCubicInOut)
 			.attr('width', (d) => {
 				const numberOfSmileys = Math.floor(xScale(d[selectedOption]) / smileyWidth);
 				return numberOfSmileys * smileyWidth;
 			})
-			.attr('fill', 'url(#smileyPattern)')
 			.attr('stroke', 'black');
 
 		bars
@@ -353,6 +246,8 @@ console.log('hoi', happiness2017Data);
 				return [];
 		}
 	}
+
+    
 </script>
 
 <div class="dropdown">
@@ -365,7 +260,7 @@ console.log('hoi', happiness2017Data);
 </div>
 
 <div>
-	<button on:click={handleClick} value="2015">2015</button>
+	<button class="selectedbutton" on:click={handleClick} value="2015">2015</button>
 	<button on:click={handleClick} value="2016">2016</button>
 	<button on:click={handleClick} value="2017">2017</button>
 	<button on:click={handleClick} value="2018">2018</button>
@@ -378,23 +273,61 @@ console.log('hoi', happiness2017Data);
 ook filteren per jaar, want heb nu alleen 2015 nog -->
 
 <style>
+    div {
+        padding: 10px;
+    }
+
+    div button {
+        padding: 8px;
+        margin: 3px;
+        background-color: rgb(238, 238, 46); 
+        font-size: 15px;
+        font-family: 'Josefin Sans';
+        border: 2px black;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: ease-in-out 400ms;
+        
+    }
+
+    .selectedbutton {
+        background-color: rgb(240, 179, 65);
+    }
+
+
+    div button:hover {
+        background-color: rgb(240, 179, 65);
+        transform: scale(1.5);
+    }
+
+    div button:focus {
+        background-color: rgb(240, 179, 65);
+    }
+
+
 	.dropdown {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		padding: 30px;
+		padding: 40px;
 	}
 
 	/* Style the dropdown select */
 	select {
-		padding: 12px;
+		padding: 20px;
         text-align: center;
 		font-size: 40px;
-		font-family: 'Pacifico'; /* Use the Pacifico font */
-        border: none;	
-        background: none;
-        cursor: pointer;
-        background-position: 8px center;
+		font-family: 'Pacifico'; 
+        border: 5px transparent solid;
+        border-radius: 30px;	
+        background:  rgb(240, 179, 65);
+        cursor: pointer;      
+        transition: ease-in-out 200ms; 
 	}
+
+    div select:hover {
+        border: 5px black solid
+    }
+
 
 </style>
