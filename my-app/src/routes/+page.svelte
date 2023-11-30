@@ -11,7 +11,7 @@
 <!-- <Smiley/> -->
 	
 <svelte:head>
-	<title>Tech Track Boilerplate</title>
+	<title>Happiness Balloons</title>
 	<link rel="icon" href="/images/Smiley.svg" type="image/svg" />
 	<link rel="stylesheet" href="generalstyle.css" />
 </svelte:head>
